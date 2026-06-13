@@ -1,0 +1,34 @@
+[package]
+name = "republisher"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Generic, extensible industrial-protocol MQTT republisher (BACnet/Modbus/OPC UA)."
+repository = "https://github.com/NETIX-AI-OSS/netix-republisher"
+default-run = "republisher"
+
+# Explicit workspace root: the root package only. The vendored bacnet-transport
+# is referenced solely via the [patch] below, not as a member, so it is excluded
+# from membership (and therefore from `fmt`/`clippy --workspace`).
+[workspace]
+exclude = ["vendor/bacnet-transport"]
+
+[[bin]]
+name = "republisher"
+path = "src/main.rs"
+
+[dependencies]
+# Shared adapter libraries, pulled from netix-protocol-core (commit pinned in
+# Cargo.lock). Only the republisher-side (`republish`) feature is enabled.
+republish-core = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", branch = "main" }
+proto-bacnet = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", branch = "main", features = ["republish"] }
+proto-modbus = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", branch = "main", features = ["republish"] }
+proto-opcua = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", branch = "main", features = ["republish"] }
+
+# Patched bacnet-transport: keeps the broadcast destination port at 47808 when
+# the local bind port is ephemeral (port = 0), which upstream breaks. Required
+# for BACnet Who-Is discovery from the ephemeral-port republisher client. The
+# proto-bacnet `republish` feature depends on bacnet-transport 0.9.0; this
+# redirects that to the vendored, patched copy.
+[patch.crates-io]
+bacnet-transport = { path = "vendor/bacnet-transport" }
