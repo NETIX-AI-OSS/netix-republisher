@@ -1,0 +1,41 @@
+# NETIX Republisher configuration example.
+# Copy to `config.toml` next to the executable, or run `cargo run --bin write_config`.
+
+version = 1
+protocol = "bacnet"
+
+[connections.bacnet]
+discover_all_interfaces = true
+port = 0
+broadcast_address = "255.255.255.255"
+discovery_window_ms = 3000
+apdu_timeout_ms = 2000
+poll_concurrency = 8
+device_backoff_max_secs = 300
+bind_failure_policy = "skip"
+
+[mqtt]
+host = "localhost"
+port = 8883
+use_tls = true
+client_id = "netix-republisher"
+topic_prefix = "Netix/Site"
+health_topic = "Netix/Site/_health/republisher"
+remember_secrets = false
+retain = false
+keep_alive_secs = 30
+
+[[points]]
+enabled = true
+device_key = "AHU-L-001"
+tag_path = "AHU-L-001/SupplyAirTemp"
+poll_interval_secs = 10
+
+[points.addressing]
+device_instance = 10700
+object_type = "analog_input"
+object_instance = 1
+property = "present_value"
+
+[ui]
+theme = "auto"
