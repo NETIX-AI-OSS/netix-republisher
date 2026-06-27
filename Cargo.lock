@@ -3676,7 +3676,7 @@ dependencies = [
 [[package]]
 name = "proto-api"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?branch=main#28ea0568f8da87b66cd4136f66ce602e67dba383"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.1-core#f6b102bad1f048d60a16813d00a2fe80ab255234"
 dependencies = [
  "serde",
  "serde_json",
@@ -3685,7 +3685,7 @@ dependencies = [
 [[package]]
 name = "proto-bacnet"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?branch=main#28ea0568f8da87b66cd4136f66ce602e67dba383"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.1-core#f6b102bad1f048d60a16813d00a2fe80ab255234"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3704,7 +3704,7 @@ dependencies = [
 [[package]]
 name = "proto-modbus"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?branch=main#28ea0568f8da87b66cd4136f66ce602e67dba383"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.1-core#f6b102bad1f048d60a16813d00a2fe80ab255234"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3720,7 +3720,7 @@ dependencies = [
 [[package]]
 name = "proto-opcua"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?branch=main#28ea0568f8da87b66cd4136f66ce602e67dba383"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.1-core#f6b102bad1f048d60a16813d00a2fe80ab255234"
 dependencies = [
  "anyhow",
  "async-opcua",
@@ -4027,7 +4027,7 @@ checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
 [[package]]
 name = "republish-core"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?branch=main#28ea0568f8da87b66cd4136f66ce602e67dba383"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.1-core#f6b102bad1f048d60a16813d00a2fe80ab255234"
 dependencies = [
  "anyhow",
  "async-trait",

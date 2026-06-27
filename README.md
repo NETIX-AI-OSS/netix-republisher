@@ -21,6 +21,15 @@ cargo build --release
 Linux GUI builds need the usual windowing dev libraries (see the release
 workflow for the exact apt package list).
 
+## Releases
+
+Tagged releases (`v*`) publish platform zip files only — for example
+`netix-republisher-<tag>-linux-x86_64.zip`, `...-linux-aarch64.zip`,
+`...-macos-x86_64.zip`, `...-macos-aarch64.zip`, and `...-windows-x86_64.zip`
+— plus a `SHA256SUMS` checksum file and build-provenance attestation. GitHub's
+auto-generated "Source code" archives are removed; extract the zip for your
+platform and run `republisher` (Linux/macOS) or `republisher.exe` (Windows).
+
 ## Protocol notes
 
 - **BACnet/IP** — Who-Is/I-Am discovery, object-list browse, ReadProperty(Multiple)
