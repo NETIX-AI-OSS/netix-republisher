@@ -28,10 +28,34 @@ fn bacnet_point(
 
 fn simulator_points() -> Vec<PointConfig> {
     vec![
-        bacnet_point("AHU-L-001", 10700, "analog_input", 1, "AHU-L-001/SupplyAirTemp"),
-        bacnet_point("AHU-L-001", 10700, "analog_input", 2, "AHU-L-001/ReturnAirTemp"),
-        bacnet_point("AHU-L-001", 10700, "binary_input", 1, "AHU-L-001/SupplyFanStatus"),
-        bacnet_point("VAV-OFC-001", 10900, "analog_input", 1, "VAV-OFC-001/RoomTemp"),
+        bacnet_point(
+            "AHU-L-001",
+            10700,
+            "analog_input",
+            1,
+            "AHU-L-001/SupplyAirTemp",
+        ),
+        bacnet_point(
+            "AHU-L-001",
+            10700,
+            "analog_input",
+            2,
+            "AHU-L-001/ReturnAirTemp",
+        ),
+        bacnet_point(
+            "AHU-L-001",
+            10700,
+            "binary_input",
+            1,
+            "AHU-L-001/SupplyFanStatus",
+        ),
+        bacnet_point(
+            "VAV-OFC-001",
+            10900,
+            "analog_input",
+            1,
+            "VAV-OFC-001/RoomTemp",
+        ),
         bacnet_point(
             "VAV-OFC-001",
             10900,
@@ -67,12 +91,21 @@ fn main() -> anyhow::Result<()> {
     let mut bacnet = Addressing::new();
     bacnet.insert("discover_all_interfaces".into(), serde_json::json!(false));
     bacnet.insert("port".into(), serde_json::json!(0));
-    bacnet.insert("broadcast_address".into(), serde_json::json!("255.255.255.255"));
+    bacnet.insert(
+        "broadcast_address".into(),
+        serde_json::json!("255.255.255.255"),
+    );
     bacnet.insert("bind_failure_policy".into(), serde_json::json!("skip"));
 
     let interfaces = ipv4_interfaces();
-    if let Some(preferred) = interfaces.iter().find(|iface| iface.name.starts_with("bridge")) {
-        bacnet.insert("interface".into(), serde_json::json!(preferred.addr.to_string()));
+    if let Some(preferred) = interfaces
+        .iter()
+        .find(|iface| iface.name.starts_with("bridge"))
+    {
+        bacnet.insert(
+            "interface".into(),
+            serde_json::json!(preferred.addr.to_string()),
+        );
         eprintln!(
             "Set bacnet interface to {} ({}) for Docker/OrbStack reachability",
             preferred.addr, preferred.name
@@ -82,7 +115,10 @@ fn main() -> anyhow::Result<()> {
             "No bridge NIC found; using first interface {} ({})",
             first.addr, first.name
         );
-        bacnet.insert("interface".into(), serde_json::json!(first.addr.to_string()));
+        bacnet.insert(
+            "interface".into(),
+            serde_json::json!(first.addr.to_string()),
+        );
     }
     config.connections.insert("bacnet".to_string(), bacnet);
 
