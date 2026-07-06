@@ -1,7 +1,7 @@
 //! Writes a sample republisher config with BACnet simulator-aligned points.
 
 use proto_api::Addressing;
-use republish_core::config::{config_path, save_to_path, AppConfig};
+use republish_core::config::{config_path, save_to_path, AppConfig, MqttConfig};
 use republish_core::model::PointConfig;
 use republish_core::network::ipv4_interfaces;
 
@@ -82,11 +82,16 @@ fn simulator_points() -> Vec<PointConfig> {
 
 fn main() -> anyhow::Result<()> {
     let path = config_path()?;
-    let mut config = AppConfig::default();
-    config.protocol = "bacnet".to_string();
-    config.mqtt.use_tls = false;
-    config.mqtt.port = 1883;
-    config.points = simulator_points();
+    let mut config = AppConfig {
+        protocol: "bacnet".to_string(),
+        mqtt: MqttConfig {
+            use_tls: false,
+            port: 1883,
+            ..Default::default()
+        },
+        points: simulator_points(),
+        ..Default::default()
+    };
 
     let mut bacnet = Addressing::new();
     bacnet.insert("discover_all_interfaces".into(), serde_json::json!(false));
