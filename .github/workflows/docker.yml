@@ -12,9 +12,10 @@ on:
     tags: ["v*"]
   pull_request:
 
+# IMAGE_NAME is derived per-job as the lowercased github.repository (OCI refs
+# must be lowercase; the org name is uppercase).
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 permissions:
   contents: read
@@ -38,10 +39,13 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
-      - name: Prepare platform slug
+      - name: Prepare platform slug and lowercase image name
         run: |
           platform="${{ matrix.platform }}"
           echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
+          # OCI references must be lowercase; github.repository preserves the
+          # org's capitalisation (NETIX-AI-OSS).
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
@@ -98,6 +102,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Lowercase image name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Download digests
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
