@@ -1,0 +1,31 @@
+# Turnkey NETIX Republisher (web GUI on :8080). Suits Modbus TCP and OPC UA,
+# which connect out over ordinary bridge networking. For BACnet broadcast
+# discovery use docker-compose.bacnet.yml (host network) instead.
+services:
+  republisher:
+    image: ghcr.io/netix-ai-oss/netix-republisher:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - republisher-data:/data
+    environment:
+      # Web GUI admin credential — set one of these before first boot.
+      REPUBLISHER_ADMIN_PASSWORD: ${REPUBLISHER_ADMIN_PASSWORD:?set REPUBLISHER_ADMIN_PASSWORD}
+      # Broker target; the GUI can change all of this later.
+      REPUBLISHER_MQTT_HOST: ${REPUBLISHER_MQTT_HOST:-broker.example.com}
+      REPUBLISHER_MQTT_PORT: ${REPUBLISHER_MQTT_PORT:-8883}
+      REPUBLISHER_MQTT_TLS: ${REPUBLISHER_MQTT_TLS:-true}
+      REPUBLISHER_MQTT_USERNAME: ${REPUBLISHER_MQTT_USERNAME:-}
+      REPUBLISHER_MQTT_PASSWORD: ${REPUBLISHER_MQTT_PASSWORD:-}
+      REPUBLISHER_MQTT_TOPIC_PREFIX: ${REPUBLISHER_MQTT_TOPIC_PREFIX:-Netix/Site}
+      REPUBLISHER_PROTOCOL: ${REPUBLISHER_PROTOCOL:-modbus}
+      # Start publishing immediately once points are configured.
+      REPUBLISHER_AUTOSTART: ${REPUBLISHER_AUTOSTART:-true}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  republisher-data:
