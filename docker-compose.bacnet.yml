@@ -1,0 +1,27 @@
+# NETIX Republisher for BACnet/IP: Who-Is discovery is a UDP broadcast, which
+# cannot cross the Docker bridge — the container must share the host's network
+# (or a macvlan) to see devices on the LAN. The web GUI then listens on the
+# host's :8080 directly.
+services:
+  republisher:
+    image: ghcr.io/netix-ai-oss/netix-republisher:latest
+    network_mode: host
+    volumes:
+      - republisher-data:/data
+    environment:
+      REPUBLISHER_ADMIN_PASSWORD: ${REPUBLISHER_ADMIN_PASSWORD:?set REPUBLISHER_ADMIN_PASSWORD}
+      REPUBLISHER_BIND: ${REPUBLISHER_BIND:-0.0.0.0:8080}
+      REPUBLISHER_MQTT_HOST: ${REPUBLISHER_MQTT_HOST:-broker.example.com}
+      REPUBLISHER_MQTT_PORT: ${REPUBLISHER_MQTT_PORT:-8883}
+      REPUBLISHER_MQTT_TLS: ${REPUBLISHER_MQTT_TLS:-true}
+      REPUBLISHER_MQTT_TOPIC_PREFIX: ${REPUBLISHER_MQTT_TOPIC_PREFIX:-Netix/Site}
+      REPUBLISHER_PROTOCOL: bacnet
+      REPUBLISHER_AUTOSTART: ${REPUBLISHER_AUTOSTART:-true}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  republisher-data:

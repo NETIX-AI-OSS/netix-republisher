@@ -1,0 +1,8 @@
+target/
+.git/
+.github/
+.cargo/
+assets/
+*.md
+config.toml
+config.yaml

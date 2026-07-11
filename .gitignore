@@ -8,3 +8,6 @@ target/
 # Editor / OS cruft
 *.rs.bk
 .DS_Store
+
+# Local cargo overrides (dev-only patch of git deps to sibling checkouts)
+/.cargo/
