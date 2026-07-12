@@ -165,19 +165,18 @@ async function initSession() {
 
 let events = null;
 
+function setConnIndicator(live) {
+  const node = $("conn-indicator");
+  clear(node);
+  node.append(el("span", { class: "dot" }), live ? "Live" : "Reconnecting");
+  node.classList.toggle("offline", !live);
+}
+
 function connectEvents() {
   if (events) events.close();
   events = new EventSource("/api/events");
-  events.onopen = () => {
-    const node = $("conn-indicator");
-    node.textContent = "● live";
-    node.classList.remove("offline");
-  };
-  events.onerror = () => {
-    const node = $("conn-indicator");
-    node.textContent = "● reconnecting";
-    node.classList.add("offline");
-  };
+  events.onopen = () => setConnIndicator(true);
+  events.onerror = () => setConnIndicator(false);
   events.onmessage = (message) => {
     let payload;
     try {
@@ -300,6 +299,7 @@ function navigate(page) {
   if (!PAGES.includes(page)) page = "overview";
   state.page = page;
   state.clearArmed = false;
+  closeMobileMenu();
   location.hash = page;
   for (const name of PAGES) $(`page-${name}`).hidden = name !== page;
   document.querySelectorAll(".nav-btn[data-page]").forEach((button) => {
@@ -362,7 +362,14 @@ function renderOverview() {
     activity.append(el("div", { class: "muted" }, "No samples yet."));
   }
   for (const sample of state.samples.slice(0, 8)) {
-    activity.append(el("div", {}, `${sample.display_name} = ${sample.value_display}`));
+    activity.append(
+      el(
+        "div",
+        { class: "activity-row" },
+        el("div", { class: "activity-name" }, sample.display_name),
+        el("div", { class: "activity-value" }, sample.value_display)
+      )
+    );
   }
 }
 
@@ -479,8 +486,9 @@ async function loadInterfaces() {
     const payload = await api("/api/interfaces");
     state.interfaces = payload.interfaces;
     if (!state.connValues["interface"] && state.interfaces.length > 0) {
+      // Preselect locally only — persisting here would write config to disk
+      // merely from viewing the page. It is saved when the user edits anything.
       state.connValues["interface"] = state.interfaces[0].addr;
-      persistConnection();
     }
     renderConnect();
   } catch {
@@ -634,7 +642,7 @@ function renderPoints() {
     );
     const edit = el("button", { class: "btn ghost" }, "Edit");
     edit.addEventListener("click", () => loadPointIntoEditor(point));
-    const remove = el("button", { class: "btn danger" }, "Delete");
+    const remove = el("button", { class: "btn ghost-danger" }, "Delete");
     remove.addEventListener("click", () =>
       api(`/api/points/${point.index}`, { method: "DELETE" })
         .then(resetPointEditor)
@@ -650,7 +658,7 @@ function renderPoints() {
         el(
           "div",
           { class: "row-main" },
-          el("div", { class: "row-title" }, point.display_name),
+          el("div", { class: "row-title", title: point.display_name }, point.display_name),
           el("div", { class: "row-sub" }, `${point.topic}  ·  ${detail}  ·  sampled ${sampled}`)
         ),
         statusChip(point.status),
@@ -718,7 +726,7 @@ function renderSamples() {
         "div",
         { class: "sample-row" },
         el("div", { class: "sample-topic" }, sample.topic),
-        el("div", {}, sample.value_display)
+        el("div", { class: "sample-value" }, sample.value_display)
       )
     );
   }
@@ -796,25 +804,32 @@ function renderSettings() {
     theme.append(option);
   }
 
+  const section = (title) => el("div", { class: "form-section" }, title);
   container.append(
+    section("Broker"),
     settingsRow("MQTT host", host),
     settingsRow("MQTT port", port),
     el("label", { class: "check-row" }, tls, " Use TLS"),
     settingsRow("Client ID", clientId),
+    settingsRow("Keep-alive (s)", keepAlive),
+    section("Topics & payload"),
     settingsRow("Topic prefix", topicPrefix),
     settingsRow("Payload format", payload),
     settingsRow("Device topic prefix", deviceTopicPrefix),
     settingsRow("Health topic", healthTopic),
+    el("label", { class: "check-row" }, retain, " Retain"),
+    section("Authentication"),
     settingsRow("Username", username),
     el("div", { class: "field-row" }, el("label", { for: "set-password" }, "Password"), password, clearPassword),
+    el("label", { class: "check-row" }, remember, " Remember secrets in config"),
+    section("TLS certificates"),
     settingsRow("CA cert path", caCert),
     settingsRow("Client cert path", clientCert),
     settingsRow("Client key path", clientKey),
     settingsRow("Client key passphrase", passphrase),
-    settingsRow("Keep-alive (s)", keepAlive),
-    el("label", { class: "check-row" }, retain, " Retain"),
-    el("label", { class: "check-row" }, remember, " Remember secrets in config"),
+    section("Behavior"),
     el("label", { class: "check-row" }, autostart, " Auto-start republishing on launch"),
+    section("Appearance"),
     settingsRow("Theme", theme)
   );
 }
@@ -863,8 +878,9 @@ function renderLogs() {
     list.append(
       el(
         "div",
-        { class: `log-${entry.level}` },
-        `[${entry.level.toUpperCase()}] ${entry.message}`
+        { class: `log-row log-${entry.level}` },
+        el("span", { class: "log-chip" }, entry.level.toUpperCase()),
+        el("span", { class: "log-msg" }, entry.message)
       )
     );
   }
@@ -874,9 +890,18 @@ function renderLogs() {
 
 function renderStatusBar() {
   if (!state.status) return;
-  $("status-bar").textContent =
-    `${state.status.status_line}  ·  ${state.points.length} point(s)  ·  ` +
-    `${state.devices.length} device(s)  ·  ${state.status.config_path}`;
+  const bar = $("status-bar");
+  clear(bar);
+  bar.append(
+    el("span", { class: "status-line" }, state.status.status_line),
+    el(
+      "span",
+      { class: "status-meta" },
+      `${state.points.length} point${state.points.length === 1 ? "" : "s"} · ` +
+        `${state.devices.length} device${state.devices.length === 1 ? "" : "s"}`
+    ),
+    el("span", { class: "status-path" }, state.status.config_path)
+  );
 }
 
 function renderAll() {
@@ -891,12 +916,35 @@ function renderAll() {
 
 // ---------- wire up static controls ----------
 
+function closeMobileMenu() {
+  const sidebar = $("sidebar");
+  const backdrop = $("backdrop");
+  if (sidebar) sidebar.classList.remove("open");
+  if (backdrop) backdrop.hidden = true;
+}
+
 function initControls() {
   document.querySelectorAll(".nav-btn[data-page]").forEach((button) => {
     button.addEventListener("click", () => navigate(button.dataset.page));
   });
 
+  $("menu-btn").addEventListener("click", () => {
+    $("sidebar").classList.add("open");
+    $("backdrop").hidden = false;
+  });
+  $("backdrop").addEventListener("click", closeMobileMenu);
+
   $("protocol-select").addEventListener("change", async (event) => {
+    // Switching clears discovery results and repoints the whole app; make it a
+    // deliberate act rather than a silent side effect of exploring the list.
+    const caps = state.caps.find((c) => c.id === event.target.value);
+    const label = caps ? caps.display_name : event.target.value;
+    if (state.config && event.target.value !== state.config.protocol) {
+      if (!window.confirm(`Switch the active protocol to ${label}? Discovered devices and browsed points will be cleared.`)) {
+        renderConnect();
+        return;
+      }
+    }
     try {
       await api("/api/protocol", { method: "POST", body: JSON.stringify({ id: event.target.value }) });
       state.devices = [];

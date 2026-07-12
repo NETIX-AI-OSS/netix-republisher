@@ -3,121 +3,184 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NETIX Republisher</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>NETIX.AI Republisher</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div id="login" class="login-overlay" hidden>
-    <form id="login-form" class="login-card">
-      <div class="brand"><span class="brand-mark">N</span> NETIX Republisher</div>
-      <label for="login-password">Admin password</label>
-      <input id="login-password" type="password" autocomplete="current-password" autofocus>
-      <button type="submit" class="btn primary">Sign in</button>
-      <div id="login-error" class="login-error" hidden></div>
-    </form>
+    <div class="login-panel">
+      <form id="login-form" class="login-card">
+        <div class="login-brand">
+          <img class="logo-light" src="/logo.png" alt="NETIX.AI">
+          <img class="logo-dark" src="/logo-dark.png" alt="NETIX.AI">
+        </div>
+        <div class="login-title">Republisher</div>
+        <div class="login-sub">Sign in to manage this edge gateway</div>
+        <label for="login-password">Admin password</label>
+        <input id="login-password" type="password" autocomplete="current-password" autofocus>
+        <button type="submit" class="btn primary btn-block">Sign in</button>
+        <div id="login-error" class="login-error" hidden></div>
+      </form>
+      <div class="login-foot">NETIX.AI &middot; industrial data republisher</div>
+    </div>
   </div>
 
   <div id="shell" class="shell" hidden>
-    <nav class="sidebar">
-      <div class="brand"><span class="brand-mark">N</span> NETIX<br><small>Republisher</small></div>
-      <button class="nav-btn" data-page="overview">Overview</button>
-      <button class="nav-btn" data-page="connect">Connect</button>
-      <button class="nav-btn" data-page="points">Points</button>
-      <button class="nav-btn" data-page="republish">Republish</button>
-      <button class="nav-btn" data-page="settings">Settings</button>
-      <button class="nav-btn" data-page="logs">Logs</button>
+    <header class="mobile-bar">
+      <button id="menu-btn" class="icon-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <img class="mobile-glyph" src="/glyph.png" alt="">
+      <span class="mobile-title">Republisher</span>
+    </header>
+    <div id="backdrop" class="backdrop" hidden></div>
+
+    <nav id="sidebar" class="sidebar">
+      <div class="brand">
+        <img class="logo-light" src="/logo.png" alt="NETIX.AI">
+        <img class="logo-dark" src="/logo-dark.png" alt="NETIX.AI">
+        <div class="brand-sub">Republisher</div>
+      </div>
+
+      <div class="nav-group-label">Monitor</div>
+      <button class="nav-btn" data-page="overview">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Overview
+      </button>
+      <button class="nav-btn" data-page="republish">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+        Republish
+      </button>
+      <button class="nav-btn" data-page="logs">
+        <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        Logs
+      </button>
+
+      <div class="nav-group-label">Configure</div>
+      <button class="nav-btn" data-page="connect">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Connect
+      </button>
+      <button class="nav-btn" data-page="points">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="0.75"/><circle cx="3.5" cy="12" r="0.75"/><circle cx="3.5" cy="18" r="0.75"/></svg>
+        Points
+      </button>
+      <button class="nav-btn" data-page="settings">
+        <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        Settings
+      </button>
+
       <div class="sidebar-spacer"></div>
-      <div id="conn-indicator" class="conn-indicator" title="Live event stream">● live</div>
-      <button id="logout-btn" class="nav-btn subtle" hidden>Sign out</button>
+      <div id="conn-indicator" class="conn-indicator" title="Live event stream"><span class="dot"></span>Live</div>
+      <button id="logout-btn" class="nav-btn subtle" hidden>
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign out
+      </button>
     </nav>
 
     <main class="main">
       <section id="page-overview" class="page" hidden>
-        <h1>Overview</h1>
-        <div id="overview-metrics" class="metrics"></div>
-        <div class="card">
-          <div class="eyebrow">RECENT ACTIVITY</div>
-          <div id="overview-activity" class="activity"></div>
+        <div class="page-inner">
+          <h1>Overview</h1>
+          <div id="overview-metrics" class="metrics"></div>
+          <div class="card">
+            <div class="eyebrow">Recent activity</div>
+            <div id="overview-activity" class="activity"></div>
+          </div>
         </div>
       </section>
 
       <section id="page-connect" class="page" hidden>
-        <h1>Connection</h1>
-        <div class="field-row">
-          <label for="protocol-select">Protocol</label>
-          <select id="protocol-select"></select>
-        </div>
-        <div class="card"><div id="conn-fields" class="fields"></div></div>
-        <div class="btn-row">
-          <button id="discover-btn" class="btn primary">Discover</button>
-          <button id="scanall-btn" class="btn" hidden>Scan all objects</button>
-          <span id="scan-progress" class="muted" hidden></span>
-        </div>
-        <div id="devices-block" hidden>
-          <div class="eyebrow">DISCOVERED DEVICES</div>
-          <div id="devices-list" class="stack"></div>
-        </div>
-        <div id="browsed-block" hidden>
-          <div class="eyebrow">BROWSED POINTS</div>
-          <div id="browsed-list" class="stack"></div>
+        <div class="page-inner">
+          <h1>Connection</h1>
+          <div class="field-row protocol-row">
+            <label for="protocol-select">Protocol</label>
+            <select id="protocol-select"></select>
+          </div>
+          <div class="card"><div id="conn-fields" class="fields"></div></div>
+          <div class="btn-row">
+            <button id="discover-btn" class="btn primary">Discover</button>
+            <button id="scanall-btn" class="btn" hidden>Scan all objects</button>
+            <span id="scan-progress" class="muted" hidden></span>
+          </div>
+          <div id="devices-block" hidden>
+            <div class="eyebrow">Discovered devices</div>
+            <div id="devices-list" class="stack"></div>
+          </div>
+          <div id="browsed-block" hidden>
+            <div class="eyebrow">Browsed points</div>
+            <div id="browsed-list" class="stack"></div>
+          </div>
         </div>
       </section>
 
       <section id="page-points" class="page" hidden>
-        <div class="split">
-          <div class="split-editor">
-            <h1 id="point-editor-title">New point</h1>
-            <div class="card">
-              <div class="fields">
-                <div class="field-row"><label for="pe-device-key">Device key</label><input id="pe-device-key" placeholder="label"></div>
-                <div id="pe-addressing" class="fields"></div>
-                <div class="field-row"><label for="pe-tag-path">Tag path</label><input id="pe-tag-path" placeholder="optional"></div>
-                <div class="field-row"><label for="pe-poll">Poll interval (s)</label><input id="pe-poll" value="10"></div>
-                <label class="check-row"><input id="pe-enabled" type="checkbox" checked> Enabled</label>
-                <div class="btn-row">
-                  <button id="pe-save" class="btn primary">Save point</button>
-                  <button id="pe-new" class="btn">New</button>
+        <div class="page-inner wide">
+          <div class="split">
+            <div class="split-editor">
+              <h1 id="point-editor-title">New point</h1>
+              <div class="card">
+                <div class="fields">
+                  <div class="field-row"><label for="pe-device-key">Device key</label><input id="pe-device-key" placeholder="label"></div>
+                  <div id="pe-addressing" class="fields"></div>
+                  <div class="field-row"><label for="pe-tag-path">Tag path</label><input id="pe-tag-path" placeholder="optional"></div>
+                  <div class="field-row"><label for="pe-poll">Poll interval (s)</label><input id="pe-poll" value="10"></div>
+                  <label class="check-row"><input id="pe-enabled" type="checkbox" checked> Enabled</label>
+                  <div class="btn-row">
+                    <button id="pe-save" class="btn primary">Save point</button>
+                    <button id="pe-new" class="btn">New</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="split-list">
-            <h1 id="points-title">Configured points (0)</h1>
-            <button id="clear-points" class="btn">Clear all points</button>
-            <div id="points-list" class="stack"></div>
+            <div class="split-list">
+              <div class="split-list-head">
+                <h1 id="points-title">Configured points (0)</h1>
+                <button id="clear-points" class="btn subtle-danger">Clear all points</button>
+              </div>
+              <div id="points-list" class="stack"></div>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="page-republish" class="page" hidden>
-        <div class="page-head">
-          <h1>Republish</h1>
-          <div class="btn-row">
-            <button id="run-toggle" class="btn primary">Start</button>
-            <button id="poll-once" class="btn">Poll once</button>
+        <div class="page-inner">
+          <div class="page-head">
+            <h1>Republish</h1>
+            <div class="btn-row">
+              <button id="run-toggle" class="btn primary">Start</button>
+              <button id="poll-once" class="btn">Poll once</button>
+            </div>
           </div>
-        </div>
-        <div class="card">
-          <h2>MQTT target</h2>
-          <div id="mqtt-readout" class="readouts"></div>
-        </div>
-        <div id="republish-metrics" class="metrics"></div>
-        <div class="card">
-          <div class="eyebrow">RECENT SAMPLES</div>
-          <div id="samples-list" class="samples"></div>
+          <div id="republish-metrics" class="metrics"></div>
+          <div class="card">
+            <div class="eyebrow">MQTT target</div>
+            <div id="mqtt-readout" class="readouts"></div>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Recent samples</div>
+            <div id="samples-list" class="samples"></div>
+          </div>
         </div>
       </section>
 
       <section id="page-settings" class="page" hidden>
-        <h1>MQTT / TLS</h1>
-        <div class="card"><div id="settings-fields" class="fields"></div></div>
-        <div class="btn-row"><button id="settings-save" class="btn primary">Save configuration</button></div>
+        <div class="page-inner">
+          <div class="page-head">
+            <h1>Settings</h1>
+            <div class="btn-row"><button id="settings-save" class="btn primary">Save configuration</button></div>
+          </div>
+          <div class="card"><div id="settings-fields" class="fields"></div></div>
+        </div>
       </section>
 
       <section id="page-logs" class="page" hidden>
-        <h1>Logs</h1>
-        <div class="card"><div id="logs-list" class="logs"></div></div>
+        <div class="page-inner">
+          <h1>Logs</h1>
+          <div class="card logs-card"><div id="logs-list" class="logs"></div></div>
+        </div>
       </section>
 
       <footer id="status-bar" class="status-bar"></footer>

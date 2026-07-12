@@ -249,6 +249,10 @@ fn router(state: Arc<WebState>) -> Router {
         .route("/app.js", get(assets::app_js))
         .route("/style.css", get(assets::style_css))
         .route("/favicon.svg", get(assets::favicon))
+        .route("/favicon.png", get(assets::favicon_png))
+        .route("/logo.png", get(assets::logo_png))
+        .route("/logo-dark.png", get(assets::logo_dark_png))
+        .route("/glyph.png", get(assets::glyph_png))
         .nest("/api", api)
         .fallback(|| async { (StatusCode::NOT_FOUND, "not found") })
         .layer(middleware::from_fn_with_state(
@@ -265,7 +269,14 @@ fn router(state: Arc<WebState>) -> Router {
 fn is_public(path: &str, method: &Method) -> bool {
     matches!(
         path,
-        "/" | "/app.js" | "/style.css" | "/favicon.svg" | "/healthz"
+        "/" | "/app.js"
+            | "/style.css"
+            | "/favicon.svg"
+            | "/favicon.png"
+            | "/logo.png"
+            | "/logo-dark.png"
+            | "/glyph.png"
+            | "/healthz"
     ) || (path == "/api/session" && matches!(*method, Method::GET | Method::POST | Method::DELETE))
 }
 
