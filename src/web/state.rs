@@ -63,6 +63,12 @@ pub struct Shared {
     /// Broker-confirmed deliveries (running total of QoS 1 PubAcks). The honest
     /// "delivered" figure surfaced to the operator alongside `published_total`.
     pub acked_total: usize,
+    /// Most recent broker/connection error reported by the worker. Carries the
+    /// CONNACK refusal message on an auth failure (bad username/password, not
+    /// authorized) so the UI can tell "connected but not delivering" apart from a
+    /// plain transport drop. Cleared when the link recovers (a later cycle reports
+    /// no error) and on each start.
+    pub last_error: Option<String>,
     pub status_line: String,
 }
 
@@ -106,6 +112,7 @@ impl WebState {
             stop_flag: None,
             published_total: 0,
             acked_total: 0,
+            last_error: None,
             status_line: boot_status.clone(),
         };
         push_log(&mut shared, LogLevel::Info, boot_status);
@@ -195,6 +202,7 @@ impl WebState {
             "devices": shared.devices.len(),
             "published_total": shared.published_total,
             "acked_total": shared.acked_total,
+            "last_error": shared.last_error,
             "stale_points": stale,
             "scan_progress": shared.scan_progress.map(|(current, total)| serde_json::json!({"current": current, "total": total})),
             "config_path": self.config_path.display().to_string(),
@@ -355,10 +363,16 @@ fn apply_event(state: &WebState, event: WorkerEvent) {
             // `acked` is a running broker-confirmed total; track the latest value
             // rather than summing per-cycle deltas so it reflects real delivery.
             shared.acked_total = shared.acked_total.max(stats.acked);
+            // Replace (don't accumulate): the worker sets `last_error` to the
+            // sticky CONNACK refusal on an auth failure and back to None once the
+            // link recovers, so mirroring the latest value keeps the honest
+            // "connected vs auth-failure" signal current.
+            shared.last_error = stats.last_error.clone();
             state.emit(serde_json::json!({
                 "type": "stats",
                 "published_total": shared.published_total,
                 "acked_total": shared.acked_total,
+                "last_error": shared.last_error,
             }));
         }
         WorkerEvent::PointPublish { identity, error } => {

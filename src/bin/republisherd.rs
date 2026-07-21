@@ -26,14 +26,18 @@ ENVIRONMENT:
     REPUBLISHER_ADMIN_PASSWORD_HASH  web GUI admin password (argon2 PHC)
     REPUBLISHER_AUTH=disabled        disable auth (loopback binds only)
     REPUBLISHER_AUTOSTART            start republishing at boot (true/false)
+    REPUBLISHER_DISCOVER_ON_START    with no enabled points, discover devices
+                                     and poll them instead of idling (true/false)
     REPUBLISHER_PROTOCOL             active protocol (bacnet/modbus/opcua)
     REPUBLISHER_MQTT_*               broker overrides (HOST, PORT, TLS,
-                                     USERNAME, PASSWORD, CLIENT_ID,
+                                     USERNAME, PASSWORD, PASSWORD_ENV, CLIENT_ID,
                                      TOPIC_PREFIX, HEALTH_TOPIC, RETAIN,
                                      KEEP_ALIVE_SECS, PAYLOAD_FORMAT,
                                      DEVICE_TOPIC_PREFIX, CA_CERT,
                                      CLIENT_CERT, CLIENT_KEY,
                                      CLIENT_KEY_PASSPHRASE)
+                                     PASSWORD_ENV names another env var holding
+                                     the secret, keeping it out of the config file
     REPUBLISHER_CONNECTION_JSON      JSON object merged into the active
                                      protocol's connection settings
     REPUBLISHER_POINTS_JSON          JSON array of points merged at boot

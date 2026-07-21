@@ -132,6 +132,14 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
         config.mqtt.autostart = autostart;
         note(format!("mqtt.autostart = {autostart} (env)"));
     }
+    // Runtime discover-then-poll: with no enabled points the worker discovers
+    // devices and builds an identity-faithful point set in memory instead of
+    // looping forever publishing nothing (RCA #2). Top-level config flag, sibling
+    // to `autostart`.
+    if let Some(discover_on_start) = env_bool("REPUBLISHER_DISCOVER_ON_START")? {
+        config.discover_on_start = discover_on_start;
+        note(format!("discover_on_start = {discover_on_start} (env)"));
+    }
 
     if let Some(raw) = env("REPUBLISHER_CONNECTION_JSON") {
         let object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&raw)
@@ -175,6 +183,7 @@ mod tests {
             ("REPUBLISHER_MQTT_TLS", "false"),
             ("REPUBLISHER_MQTT_PAYLOAD_FORMAT", "netix_envelope"),
             ("REPUBLISHER_AUTOSTART", "true"),
+            ("REPUBLISHER_DISCOVER_ON_START", "true"),
             (
                 "REPUBLISHER_CONNECTION_JSON",
                 r#"{"port": 0, "discover_all_interfaces": true}"#,
@@ -199,6 +208,7 @@ mod tests {
         assert!(!config.mqtt.use_tls);
         assert_eq!(config.mqtt.payload_format, PayloadFormat::NetixEnvelope);
         assert!(config.mqtt.autostart);
+        assert!(config.discover_on_start);
         assert_eq!(
             config.connection().get("discover_all_interfaces"),
             Some(&serde_json::json!(true))
