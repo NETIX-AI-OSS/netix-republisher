@@ -231,7 +231,10 @@ mod tests {
         apply_env_overrides(&mut config).expect("overrides apply");
         std::env::remove_var("REPUBLISHER_MQTT_PASSWORD_ENV");
         std::env::remove_var("MY_BROKER_SECRET_VAR");
-        assert_eq!(config.mqtt.password_env.as_deref(), Some("MY_BROKER_SECRET_VAR"));
+        assert_eq!(
+            config.mqtt.password_env.as_deref(),
+            Some("MY_BROKER_SECRET_VAR")
+        );
         assert_eq!(config.mqtt.password.as_deref(), Some("indirect-secret"));
     }
 }
