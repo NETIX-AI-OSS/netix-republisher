@@ -351,12 +351,14 @@ fn apply_event(state: &WebState, event: WorkerEvent) {
             );
         }
         WorkerEvent::PointPublish { identity, error } => {
-            let key_parts: Vec<String> = identity
+            // Addressing-only key, matching dto::identity_key so the UI joins
+            // statuses to points across a device_key rename.
+            let key = identity
                 .addressing
                 .iter()
                 .map(|(k, v)| format!("{k}={v}"))
-                .collect();
-            let key = format!("{}|{}", identity.device_key, key_parts.join(","));
+                .collect::<Vec<_>>()
+                .join(",");
             let status = shared.statuses.entry(identity).or_default();
             match error {
                 None => status.record_publish_success(),
