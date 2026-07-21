@@ -255,7 +255,10 @@ function handleEvent(ev) {
       renderOverview();
       break;
     case "stats":
-      if (state.status) state.status.published_total = ev.published_total;
+      if (state.status) {
+        state.status.published_total = ev.published_total;
+        if (ev.acked_total !== undefined) state.status.acked_total = ev.acked_total;
+      }
       renderRepublish();
       renderOverview();
       break;
@@ -324,6 +327,16 @@ function metric(label, value, sub, kind) {
   );
 }
 
+// Colour the "Delivered" (broker-acked) metric: green once the broker confirms
+// deliveries, but amber when samples have been queued yet nothing is acked — the
+// "looks healthy, delivers nothing" case (bad auth / broker rejecting publishes).
+function deliveredKind(status) {
+  const queued = status.published_total || 0;
+  const acked = status.acked_total || 0;
+  if (acked > 0 || queued === 0) return "success";
+  return "warning";
+}
+
 function statusChip(status) {
   const map = {
     unknown: ["Unknown", ""],
@@ -353,7 +366,13 @@ function renderOverview() {
   metrics.append(
     metric("Points", String(state.points.length), "configured", "accent"),
     metric("Devices", String(state.devices.length), "discovered", ""),
-    metric("Published", String(state.status.published_total), "samples", "success"),
+    metric("Queued", String(state.status.published_total), "enqueued", ""),
+    metric(
+      "Delivered",
+      String(state.status.acked_total ?? 0),
+      "broker-acked",
+      deliveredKind(state.status)
+    ),
     metric("Stale", String(stale), "points", stale > 0 ? "warning" : "success")
   );
   const activity = $("overview-activity");
@@ -710,7 +729,13 @@ function renderRepublish() {
   clear(metrics);
   metrics.append(
     metric("State", label, state.config.protocol || "—", kind),
-    metric("Published", String(state.status.published_total), "samples", "accent"),
+    metric("Queued", String(state.status.published_total), "enqueued", ""),
+    metric(
+      "Delivered",
+      String(state.status.acked_total ?? 0),
+      "broker-acked",
+      deliveredKind(state.status)
+    ),
     metric("Points", String(state.points.length), "configured", "")
   );
   renderSamples();

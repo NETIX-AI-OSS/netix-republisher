@@ -560,6 +560,7 @@ pub async fn start_republisher(
     let stop = Arc::new(AtomicBool::new(false));
     shared.stop_flag = Some(Arc::clone(&stop));
     shared.published_total = 0;
+    shared.acked_total = 0;
     spawn_republisher(
         state.worker_tx.clone(),
         factory,

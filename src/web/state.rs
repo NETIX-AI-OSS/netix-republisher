@@ -58,7 +58,11 @@ pub struct Shared {
     pub log_seq: u64,
     pub lifecycle: RepublisherLifecycle,
     pub stop_flag: Option<Arc<AtomicBool>>,
+    /// Local enqueue attempts (samples handed to the MQTT channel) — NOT delivery.
     pub published_total: usize,
+    /// Broker-confirmed deliveries (running total of QoS 1 PubAcks). The honest
+    /// "delivered" figure surfaced to the operator alongside `published_total`.
+    pub acked_total: usize,
     pub status_line: String,
 }
 
@@ -101,6 +105,7 @@ impl WebState {
             lifecycle: RepublisherLifecycle::Stopped,
             stop_flag: None,
             published_total: 0,
+            acked_total: 0,
             status_line: boot_status.clone(),
         };
         push_log(&mut shared, LogLevel::Info, boot_status);
@@ -189,6 +194,7 @@ impl WebState {
             "points": shared.config.points.len(),
             "devices": shared.devices.len(),
             "published_total": shared.published_total,
+            "acked_total": shared.acked_total,
             "stale_points": stale,
             "scan_progress": shared.scan_progress.map(|(current, total)| serde_json::json!({"current": current, "total": total})),
             "config_path": self.config_path.display().to_string(),
@@ -346,9 +352,14 @@ fn apply_event(state: &WebState, event: WorkerEvent) {
         }
         WorkerEvent::PublishStatus(stats) => {
             shared.published_total += stats.published;
-            state.emit(
-                serde_json::json!({ "type": "stats", "published_total": shared.published_total }),
-            );
+            // `acked` is a running broker-confirmed total; track the latest value
+            // rather than summing per-cycle deltas so it reflects real delivery.
+            shared.acked_total = shared.acked_total.max(stats.acked);
+            state.emit(serde_json::json!({
+                "type": "stats",
+                "published_total": shared.published_total,
+                "acked_total": shared.acked_total,
+            }));
         }
         WorkerEvent::PointPublish { identity, error } => {
             // Addressing-only key, matching dto::identity_key so the UI joins
