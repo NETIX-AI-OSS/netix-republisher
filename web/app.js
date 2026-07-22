@@ -255,7 +255,13 @@ function handleEvent(ev) {
       renderOverview();
       break;
     case "stats":
-      if (state.status) state.status.published_total = ev.published_total;
+      if (state.status) {
+        state.status.published_total = ev.published_total;
+        if (ev.acked_total !== undefined) state.status.acked_total = ev.acked_total;
+        // `last_error` is always present in the delta (may be null once the link
+        // recovers), so mirror it verbatim to keep the connection banner honest.
+        state.status.last_error = ev.last_error ?? null;
+      }
       renderRepublish();
       renderOverview();
       break;
@@ -324,6 +330,48 @@ function metric(label, value, sub, kind) {
   );
 }
 
+// Colour the "Delivered" (broker-acked) metric: green once the broker confirms
+// deliveries, but amber when samples have been queued yet nothing is acked — the
+// "looks healthy, delivers nothing" case (bad auth / broker rejecting publishes).
+function deliveredKind(status) {
+  const queued = status.published_total || 0;
+  const acked = status.acked_total || 0;
+  if (acked > 0 || queued === 0) return "success";
+  return "warning";
+}
+
+// Honest connection state banner: the "Queued" counter climbs even when the
+// broker rejects auth, so on its own the box looks healthy while delivering
+// nothing. Show a loud banner whenever the worker reported a connection error
+// (carries the CONNACK refusal text on bad auth) or when samples are piling up
+// with zero broker acks. Returns an element to prepend into a .metrics grid, or
+// null when the link is healthy / idle.
+function connectionBanner(status) {
+  if (!status) return null;
+  const queued = status.published_total || 0;
+  const acked = status.acked_total || 0;
+  const error = status.last_error || null;
+  const notDelivering = queued > 0 && acked === 0;
+  if (!error && !notDelivering) return null;
+  const title = error
+    ? "Broker connection error"
+    : "Not delivering to broker";
+  const detail = error
+    ? error
+    : "Samples are being queued locally but the broker has not confirmed any deliveries (check credentials, TLS and broker permissions).";
+  return el(
+    "div",
+    { class: "conn-banner danger" },
+    el("span", { class: "conn-banner-icon" }, "⚠"),
+    el(
+      "div",
+      {},
+      el("div", { class: "conn-banner-title" }, title),
+      el("div", { class: "conn-banner-detail" }, detail)
+    )
+  );
+}
+
 function statusChip(status) {
   const map = {
     unknown: ["Unknown", ""],
@@ -353,9 +401,17 @@ function renderOverview() {
   metrics.append(
     metric("Points", String(state.points.length), "configured", "accent"),
     metric("Devices", String(state.devices.length), "discovered", ""),
-    metric("Published", String(state.status.published_total), "samples", "success"),
+    metric("Queued", String(state.status.published_total), "enqueued", ""),
+    metric(
+      "Delivered",
+      String(state.status.acked_total ?? 0),
+      "broker-acked",
+      deliveredKind(state.status)
+    ),
     metric("Stale", String(stale), "points", stale > 0 ? "warning" : "success")
   );
+  const banner = connectionBanner(state.status);
+  if (banner) metrics.append(banner);
   const activity = $("overview-activity");
   clear(activity);
   if (state.samples.length === 0) {
@@ -710,9 +766,17 @@ function renderRepublish() {
   clear(metrics);
   metrics.append(
     metric("State", label, state.config.protocol || "—", kind),
-    metric("Published", String(state.status.published_total), "samples", "accent"),
+    metric("Queued", String(state.status.published_total), "enqueued", ""),
+    metric(
+      "Delivered",
+      String(state.status.acked_total ?? 0),
+      "broker-acked",
+      deliveredKind(state.status)
+    ),
     metric("Points", String(state.points.length), "configured", "")
   );
+  const banner = connectionBanner(state.status);
+  if (banner) metrics.append(banner);
   renderSamples();
 }
 
@@ -797,6 +861,9 @@ function renderSettings() {
   remember.checked = mqtt.remember_secrets;
   const autostart = el("input", { id: "set-autostart", type: "checkbox" });
   autostart.checked = mqtt.autostart;
+  // Top-level runtime flag (sibling to autostart), not an mqtt field.
+  const discoverOnStart = el("input", { id: "set-discover-on-start", type: "checkbox" });
+  discoverOnStart.checked = !!state.config.discover_on_start;
   const theme = el("select", { id: "set-theme" });
   for (const value of ["auto", "light", "dark"]) {
     const option = el("option", { value }, value[0].toUpperCase() + value.slice(1));
@@ -829,6 +896,12 @@ function renderSettings() {
     settingsRow("Client key passphrase", passphrase),
     section("Behavior"),
     el("label", { class: "check-row" }, autostart, " Auto-start republishing on launch"),
+    el(
+      "label",
+      { class: "check-row" },
+      discoverOnStart,
+      " Discover devices on start when no points are enabled"
+    ),
     section("Appearance"),
     settingsRow("Theme", theme)
   );
@@ -857,6 +930,7 @@ async function saveSettings() {
       device_topic_prefix: $("set-device-topic").value,
       autostart: $("set-autostart").checked,
     },
+    discover_on_start: $("set-discover-on-start").checked,
     ui: { theme: $("set-theme").value },
   };
   try {

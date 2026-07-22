@@ -438,6 +438,31 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
 }
 .metric .metric-sub { font-size: 11px; }
 
+/* Full-width connection banner inside a .metrics grid: surfaces the honest
+   "connected vs auth-failure" state (broker refused the connection / not
+   delivering) that a plain climbing "Queued" counter would otherwise hide. */
+.conn-banner {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+.conn-banner .conn-banner-title { font-weight: 600; }
+.conn-banner .conn-banner-detail { color: var(--muted); word-break: break-word; }
+.conn-banner.danger {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+.conn-banner.success {
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+}
+
 /* ---- chips ---- */
 .chip {
   display: inline-block;

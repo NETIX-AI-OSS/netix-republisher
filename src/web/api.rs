@@ -447,6 +447,10 @@ pub struct SettingsReq {
     pub mqtt: MqttSettingsReq,
     #[serde(default)]
     pub ui: Option<UiSettingsReq>,
+    /// Top-level runtime flag (sibling to `mqtt.autostart`): discover-then-poll
+    /// when no points are enabled. Absent = keep the stored value.
+    #[serde(default)]
+    pub discover_on_start: Option<bool>,
 }
 
 #[derive(Deserialize)]
@@ -525,6 +529,9 @@ pub async fn put_settings(
     mqtt.payload_format = req.mqtt.payload_format;
     mqtt.device_topic_prefix = req.mqtt.device_topic_prefix;
     mqtt.autostart = req.mqtt.autostart;
+    if let Some(discover_on_start) = req.discover_on_start {
+        shared.config.discover_on_start = discover_on_start;
+    }
     if let Some(ui) = req.ui {
         shared.config.ui.theme = ui.theme;
     }
@@ -560,12 +567,15 @@ pub async fn start_republisher(
     let stop = Arc::new(AtomicBool::new(false));
     shared.stop_flag = Some(Arc::clone(&stop));
     shared.published_total = 0;
+    shared.acked_total = 0;
+    shared.last_error = None;
     spawn_republisher(
         state.worker_tx.clone(),
         factory,
         shared.config.connection(),
         shared.config.mqtt.clone(),
         shared.config.points.clone(),
+        shared.config.discover_on_start,
         stop,
     );
     state.set_status(&mut shared, LogLevel::Info, "Republisher starting…");

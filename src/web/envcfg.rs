@@ -79,6 +79,17 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
         config.mqtt.password = Some(password);
         note("mqtt.password (env)".into());
     }
+    // `password_env` names *another* variable that holds the secret, so the
+    // password stays out of both the config file and this process's direct env
+    // inventory. Resolve it immediately (env indirection is the supported path).
+    if let Some(var) = env("REPUBLISHER_MQTT_PASSWORD_ENV") {
+        config.mqtt.password_env = Some(var.clone());
+        if config.mqtt.resolve_password_env() {
+            note(format!("mqtt.password (via ${var})"));
+        } else {
+            note(format!("mqtt.password_env = {var} (env, unresolved)"));
+        }
+    }
     if let Some(path) = env("REPUBLISHER_MQTT_CA_CERT") {
         config.mqtt.ca_cert_path = Some(path);
         note("mqtt.ca_cert_path (env)".into());
@@ -120,6 +131,14 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
     if let Some(autostart) = env_bool("REPUBLISHER_AUTOSTART")? {
         config.mqtt.autostart = autostart;
         note(format!("mqtt.autostart = {autostart} (env)"));
+    }
+    // Runtime discover-then-poll: with no enabled points the worker discovers
+    // devices and builds an identity-faithful point set in memory instead of
+    // looping forever publishing nothing (RCA #2). Top-level config flag, sibling
+    // to `autostart`.
+    if let Some(discover_on_start) = env_bool("REPUBLISHER_DISCOVER_ON_START")? {
+        config.discover_on_start = discover_on_start;
+        note(format!("discover_on_start = {discover_on_start} (env)"));
     }
 
     if let Some(raw) = env("REPUBLISHER_CONNECTION_JSON") {
@@ -164,6 +183,7 @@ mod tests {
             ("REPUBLISHER_MQTT_TLS", "false"),
             ("REPUBLISHER_MQTT_PAYLOAD_FORMAT", "netix_envelope"),
             ("REPUBLISHER_AUTOSTART", "true"),
+            ("REPUBLISHER_DISCOVER_ON_START", "true"),
             (
                 "REPUBLISHER_CONNECTION_JSON",
                 r#"{"port": 0, "discover_all_interfaces": true}"#,
@@ -188,6 +208,7 @@ mod tests {
         assert!(!config.mqtt.use_tls);
         assert_eq!(config.mqtt.payload_format, PayloadFormat::NetixEnvelope);
         assert!(config.mqtt.autostart);
+        assert!(config.discover_on_start);
         assert_eq!(
             config.connection().get("discover_all_interfaces"),
             Some(&serde_json::json!(true))
@@ -201,5 +222,19 @@ mod tests {
         let error = apply_env_overrides(&mut AppConfig::default()).unwrap_err();
         std::env::remove_var("REPUBLISHER_MQTT_PORT");
         assert!(error.to_string().contains("REPUBLISHER_MQTT_PORT"));
+
+        // password_env indirection: name a *different* var holding the secret;
+        // the password is resolved from it and never taken from the config file.
+        std::env::set_var("REPUBLISHER_MQTT_PASSWORD_ENV", "MY_BROKER_SECRET_VAR");
+        std::env::set_var("MY_BROKER_SECRET_VAR", "indirect-secret");
+        let mut config = AppConfig::default();
+        apply_env_overrides(&mut config).expect("overrides apply");
+        std::env::remove_var("REPUBLISHER_MQTT_PASSWORD_ENV");
+        std::env::remove_var("MY_BROKER_SECRET_VAR");
+        assert_eq!(
+            config.mqtt.password_env.as_deref(),
+            Some("MY_BROKER_SECRET_VAR")
+        );
+        assert_eq!(config.mqtt.password.as_deref(), Some("indirect-secret"));
     }
 }

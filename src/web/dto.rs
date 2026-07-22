@@ -147,16 +147,18 @@ pub fn addressing_display(addressing: &Addressing) -> String {
 }
 
 /// Stable string key for a point identity, used by the UI to join statuses to
-/// points and samples.
+/// points and samples. Derived from the point's addressing only (matching
+/// [`PointIdentity`]), so renaming a device's `device_key` label does not
+/// orphan the UI status join. Must stay byte-for-byte identical to the key
+/// built in `web::state` for `PointPublish` events.
 pub fn identity_key(point: &PointConfig) -> String {
     let identity = PointIdentity::from_point(point);
-    let addressing = identity
+    identity
         .addressing
         .iter()
         .map(|(k, v)| format!("{k}={v}"))
         .collect::<Vec<_>>()
-        .join(",");
-    format!("{}|{addressing}", identity.device_key)
+        .join(",")
 }
 
 #[derive(Serialize)]
