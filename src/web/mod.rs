@@ -310,9 +310,7 @@ async fn auth_middleware(
 /// The CSP is strict: everything comes from the embedded assets, no inline
 /// script/style, no external origins.
 async fn security_middleware(request: Request, next: Next) -> Response {
-    // Cross-site mutation guard: browsers send Origin on cross-origin requests;
-    // reject any that doesn't match the Host we're being addressed as. Non-browser
-    // clients (curl) omit Origin and pass through — auth still applies.
+    // Reject cross-origin mutations by Origin header; non-browsers pass.
     let method = request.method().clone();
     if !matches!(method, Method::GET | Method::HEAD | Method::OPTIONS) {
         let host = request

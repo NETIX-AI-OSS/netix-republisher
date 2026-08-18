@@ -79,9 +79,7 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
         config.mqtt.password = Some(password);
         note("mqtt.password (env)".into());
     }
-    // `password_env` names *another* variable that holds the secret, so the
-    // password stays out of both the config file and this process's direct env
-    // inventory. Resolve it immediately (env indirection is the supported path).
+    // password_env names another var holding the secret; resolve it now.
     if let Some(var) = env("REPUBLISHER_MQTT_PASSWORD_ENV") {
         config.mqtt.password_env = Some(var.clone());
         if config.mqtt.resolve_password_env() {
@@ -132,10 +130,7 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
         config.mqtt.autostart = autostart;
         note(format!("mqtt.autostart = {autostart} (env)"));
     }
-    // Runtime discover-then-poll: with no enabled points the worker discovers
-    // devices and builds an identity-faithful point set in memory instead of
-    // looping forever publishing nothing (RCA #2). Top-level config flag, sibling
-    // to `autostart`.
+    // discover_on_start: auto-discover points instead of publishing nothing.
     if let Some(discover_on_start) = env_bool("REPUBLISHER_DISCOVER_ON_START")? {
         config.discover_on_start = discover_on_start;
         note(format!("discover_on_start = {discover_on_start} (env)"));
@@ -223,8 +218,7 @@ mod tests {
         std::env::remove_var("REPUBLISHER_MQTT_PORT");
         assert!(error.to_string().contains("REPUBLISHER_MQTT_PORT"));
 
-        // password_env indirection: name a *different* var holding the secret;
-        // the password is resolved from it and never taken from the config file.
+        // password_env: names another var; password never taken from config.
         std::env::set_var("REPUBLISHER_MQTT_PASSWORD_ENV", "MY_BROKER_SECRET_VAR");
         std::env::set_var("MY_BROKER_SECRET_VAR", "indirect-secret");
         let mut config = AppConfig::default();

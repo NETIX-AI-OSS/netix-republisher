@@ -1,6 +1,4 @@
-# Turnkey NETIX Republisher (web GUI on :8080). Suits Modbus TCP and OPC UA,
-# which connect out over ordinary bridge networking. For BACnet broadcast
-# discovery use docker-compose.bacnet.yml (host network) instead.
+# Turnkey web GUI (:8080) for Modbus/OPC UA; BACnet needs the .bacnet file.
 services:
   republisher:
     image: ghcr.io/netix-ai-oss/netix-republisher:latest

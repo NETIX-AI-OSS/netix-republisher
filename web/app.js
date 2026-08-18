@@ -1,9 +1,4 @@
-// NETIX Republisher web GUI.
-//
-// Feature-parity port of the capability-driven iced desktop app: every control
-// is rendered from the protocol's declared capabilities (FieldSpec), so adding
-// a protocol never requires touching this file. State hydrates from the SSE
-// snapshot and stays live via deltas; REST calls mirror desktop actions 1:1.
+// NETIX Republisher web GUI: capability-driven port of the desktop app.
 
 "use strict";
 
@@ -258,8 +253,7 @@ function handleEvent(ev) {
       if (state.status) {
         state.status.published_total = ev.published_total;
         if (ev.acked_total !== undefined) state.status.acked_total = ev.acked_total;
-        // `last_error` is always present in the delta (may be null once the link
-        // recovers), so mirror it verbatim to keep the connection banner honest.
+        // last_error is always in the delta (null once recovered); mirror as-is.
         state.status.last_error = ev.last_error ?? null;
       }
       renderRepublish();
@@ -330,9 +324,7 @@ function metric(label, value, sub, kind) {
   );
 }
 
-// Colour the "Delivered" (broker-acked) metric: green once the broker confirms
-// deliveries, but amber when samples have been queued yet nothing is acked — the
-// "looks healthy, delivers nothing" case (bad auth / broker rejecting publishes).
+// Delivered metric: green once acked, amber if queued but never acked.
 function deliveredKind(status) {
   const queued = status.published_total || 0;
   const acked = status.acked_total || 0;
@@ -340,12 +332,7 @@ function deliveredKind(status) {
   return "warning";
 }
 
-// Honest connection state banner: the "Queued" counter climbs even when the
-// broker rejects auth, so on its own the box looks healthy while delivering
-// nothing. Show a loud banner whenever the worker reported a connection error
-// (carries the CONNACK refusal text on bad auth) or when samples are piling up
-// with zero broker acks. Returns an element to prepend into a .metrics grid, or
-// null when the link is healthy / idle.
+// Banner for connection errors or queued-but-never-acked samples; else null.
 function connectionBanner(status) {
   if (!status) return null;
   const queued = status.published_total || 0;
@@ -542,8 +529,7 @@ async function loadInterfaces() {
     const payload = await api("/api/interfaces");
     state.interfaces = payload.interfaces;
     if (!state.connValues["interface"] && state.interfaces.length > 0) {
-      // Preselect locally only — persisting here would write config to disk
-      // merely from viewing the page. It is saved when the user edits anything.
+      // Preselect locally only; saved to disk when the user actually edits.
       state.connValues["interface"] = state.interfaces[0].addr;
     }
     renderConnect();
@@ -1009,8 +995,7 @@ function initControls() {
   $("backdrop").addEventListener("click", closeMobileMenu);
 
   $("protocol-select").addEventListener("change", async (event) => {
-    // Switching clears discovery results and repoints the whole app; make it a
-    // deliberate act rather than a silent side effect of exploring the list.
+    // Switching clears discovery results, so confirm before it happens.
     const caps = state.caps.find((c) => c.id === event.target.value);
     const label = caps ? caps.display_name : event.target.value;
     if (state.config && event.target.value !== state.config.protocol) {
