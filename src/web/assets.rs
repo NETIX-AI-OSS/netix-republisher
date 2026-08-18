@@ -1,6 +1,4 @@
-//! Embedded browser UI. The three files under `web/` are compiled into the
-//! binary so the container image is fully self-contained (a strict CSP plus no
-//! external requests keeps it usable on air-gapped OT networks).
+//! Embedded browser UI: the `web/` files are compiled into the binary so the container image is fully self-contained for air-gapped OT networks.
 
 use axum::http::{header, HeaderValue, StatusCode};
 use axum::response::{IntoResponse, Response};

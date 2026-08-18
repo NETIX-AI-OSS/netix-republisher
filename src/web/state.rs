@@ -1,8 +1,4 @@
-//! Shared daemon state and the worker-event drain.
-//!
-//! This is the headless twin of the desktop `RepublisherApp`: the same
-//! `republish-core` worker feeds a crossbeam channel; here a dedicated thread
-//! drains it into [`Shared`] and fans out JSON deltas to SSE subscribers.
+//! Shared daemon state and the worker-event drain: the headless twin of the desktop `RepublisherApp`, draining the same `republish-core` worker channel into [`Shared`] and fanning JSON deltas out to SSE subscribers.
 
 use std::collections::{HashMap, VecDeque};
 use std::path::PathBuf;
@@ -60,14 +56,9 @@ pub struct Shared {
     pub stop_flag: Option<Arc<AtomicBool>>,
     /// Local enqueue attempts (samples handed to the MQTT channel) — NOT delivery.
     pub published_total: usize,
-    /// Broker-confirmed deliveries (running total of QoS 1 PubAcks). The honest
-    /// "delivered" figure surfaced to the operator alongside `published_total`.
+    /// Broker-confirmed deliveries (running total of QoS 1 PubAcks) — the honest "delivered" figure alongside `published_total`.
     pub acked_total: usize,
-    /// Most recent broker/connection error reported by the worker. Carries the
-    /// CONNACK refusal message on an auth failure (bad username/password, not
-    /// authorized) so the UI can tell "connected but not delivering" apart from a
-    /// plain transport drop. Cleared when the link recovers (a later cycle reports
-    /// no error) and on each start.
+    /// Most recent broker/connection error; carries the CONNACK auth-refusal message so the UI can tell that apart from a plain transport drop, cleared on recovery or restart.
     pub last_error: Option<String>,
     pub status_line: String,
 }
@@ -148,8 +139,7 @@ impl WebState {
         self.emit(serde_json::json!({ "type": "log", "record": record, "status_line": shared.status_line }));
     }
 
-    /// Validate + persist the config (mirrors the desktop `save_config`).
-    /// Returns Err with the human-readable reason on validation/save failure.
+    /// Validate + persist the config (mirrors the desktop `save_config`), returning Err with a human-readable reason on failure.
     pub fn save_config(&self, shared: &mut Shared) -> Result<(), String> {
         if let Err(error) = shared.config.validate() {
             let message = format!("Config invalid: {error}");
@@ -258,9 +248,7 @@ fn push_log(shared: &mut Shared, level: LogLevel, message: impl Into<String>) ->
     record
 }
 
-/// Drain worker events on a dedicated thread for the daemon's lifetime.
-/// Mirrors the desktop `drain_worker_events`, then fans each change out as an
-/// SSE delta.
+/// Drains worker events on a dedicated thread for the daemon's lifetime (mirrors desktop `drain_worker_events`), fanning each change out as an SSE delta.
 pub fn spawn_event_drain(state: Arc<WebState>, receiver: WorkerReceiver) {
     std::thread::Builder::new()
         .name("worker-event-drain".into())
