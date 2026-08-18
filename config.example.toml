@@ -1,5 +1,4 @@
-# NETIX Republisher configuration example.
-# Copy to `config.toml` next to the executable, or run `cargo run --bin write_config`.
+# Example config: copy to config.toml, or run cargo run --bin write_config.
 
 version = 1
 protocol = "bacnet"

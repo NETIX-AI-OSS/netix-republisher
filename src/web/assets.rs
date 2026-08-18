@@ -9,8 +9,7 @@ const INDEX_HTML: &str = include_str!("../../web/index.html");
 const APP_JS: &str = include_str!("../../web/app.js");
 const STYLE_CSS: &str = include_str!("../../web/style.css");
 const FAVICON_SVG: &str = include_str!("../../web/favicon.svg");
-// Official NETIX.AI brand assets (from netixai.com): full logo for light and
-// dark themes, the X glyph mark, and a PNG favicon.
+// Official NETIX.AI brand assets: light/dark logos, glyph, favicon.
 const LOGO_PNG: &[u8] = include_bytes!("../../web/logo.png");
 const LOGO_DARK_PNG: &[u8] = include_bytes!("../../web/logo-dark.png");
 const GLYPH_PNG: &[u8] = include_bytes!("../../web/glyph.png");

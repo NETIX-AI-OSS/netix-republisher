@@ -360,13 +360,9 @@ fn apply_event(state: &WebState, event: WorkerEvent) {
         }
         WorkerEvent::PublishStatus(stats) => {
             shared.published_total += stats.published;
-            // `acked` is a running broker-confirmed total; track the latest value
-            // rather than summing per-cycle deltas so it reflects real delivery.
+            // acked is a running total; track latest value, don't sum deltas.
             shared.acked_total = shared.acked_total.max(stats.acked);
-            // Replace (don't accumulate): the worker sets `last_error` to the
-            // sticky CONNACK refusal on an auth failure and back to None once the
-            // link recovers, so mirroring the latest value keeps the honest
-            // "connected vs auth-failure" signal current.
+            // Replace, don't accumulate: mirrors worker's latest connection error.
             shared.last_error = stats.last_error.clone();
             state.emit(serde_json::json!({
                 "type": "stats",
@@ -376,8 +372,7 @@ fn apply_event(state: &WebState, event: WorkerEvent) {
             }));
         }
         WorkerEvent::PointPublish { identity, error } => {
-            // Addressing-only key, matching dto::identity_key so the UI joins
-            // statuses to points across a device_key rename.
+            // Addressing-only key, matches dto::identity_key across renames.
             let key = identity
                 .addressing
                 .iter()

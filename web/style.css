@@ -1,8 +1,4 @@
-/* NETIX.AI Republisher web GUI.
-   Design system: brand palette sampled from the official NETIX.AI logo
-   (steel blue #186090, cyan #10C0E8), token-driven light/dark themes.
-   Theme follows config.ui.theme: `auto` uses prefers-color-scheme;
-   `light`/`dark` are forced via data-theme on <html>. */
+/* NETIX.AI Republisher GUI styles; theme set via config.ui.theme. */
 
 :root {
   --bg: #f2f5f8;
@@ -101,9 +97,7 @@
   --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* Theme-paired logo images. Every rule is !important so layout rules like
-   `.brand img { display: block }` can never resurrect the hidden variant —
-   among !important rules the higher-specificity theme selectors still win. */
+/* Theme logos: !important so higher-specificity theme rules always win. */
 .logo-dark { display: none !important; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .logo-light { display: none !important; }
@@ -438,9 +432,7 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
 }
 .metric .metric-sub { font-size: 11px; }
 
-/* Full-width connection banner inside a .metrics grid: surfaces the honest
-   "connected vs auth-failure" state (broker refused the connection / not
-   delivering) that a plain climbing "Queued" counter would otherwise hide. */
+/* Connection banner: surfaces connected-vs-auth-failure state honestly. */
 .conn-banner {
   grid-column: 1 / -1;
   display: flex;

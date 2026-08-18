@@ -1,7 +1,4 @@
-# NETIX Republisher for BACnet/IP: Who-Is discovery is a UDP broadcast, which
-# cannot cross the Docker bridge — the container must share the host's network
-# (or a macvlan) to see devices on the LAN. The web GUI then listens on the
-# host's :8080 directly.
+# BACnet Who-Is needs UDP broadcast, so this uses host networking.
 services:
   republisher:
     image: ghcr.io/netix-ai-oss/netix-republisher:latest

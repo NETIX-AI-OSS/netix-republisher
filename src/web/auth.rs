@@ -84,8 +84,7 @@ impl Auth {
                     .take(24)
                     .map(char::from)
                     .collect();
-                // Printed once, deliberately, so a turnkey boot is never locked
-                // out; set REPUBLISHER_ADMIN_PASSWORD to make it stable.
+                // Printed once so boot never locks out; set ADMIN_PASSWORD to pin it.
                 println!("[republisherd] generated admin password: {generated}");
                 println!(
                     "[republisherd] set REPUBLISHER_ADMIN_PASSWORD (or *_HASH) to use a stable credential"

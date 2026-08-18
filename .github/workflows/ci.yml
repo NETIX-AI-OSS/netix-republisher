@@ -52,8 +52,7 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae # v2
-      # Deliberately no iced/windowing apt packages: the container build must
-      # never need them.
+      # Deliberately no iced/windowing apt packages for the container build.
       - name: Clippy (web)
         run: cargo clippy --locked --no-default-features --features web --all-targets -- -D warnings
 
