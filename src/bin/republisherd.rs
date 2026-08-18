@@ -1,9 +1,4 @@
-//! Headless web-GUI republisher daemon for containerized/edge deployment.
-//!
-//! Boot is turnkey: configuration comes from `/data/config.toml` (or
-//! `REPUBLISHER_CONFIG`) plus `REPUBLISHER_*` env overrides; with
-//! `REPUBLISHER_AUTOSTART=true` publishing begins immediately, otherwise the
-//! daemon serves the web GUI and waits.
+//! Headless web-GUI republisher daemon for containerized/edge deployment; turnkey boot from `/data/config.toml` plus `REPUBLISHER_*` env overrides, autostarting when `REPUBLISHER_AUTOSTART=true`.
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -102,9 +97,7 @@ fn usage_error(message: &str) -> ExitCode {
     ExitCode::FAILURE
 }
 
-/// Container HEALTHCHECK entrypoint: no shell or curl exists in the image, so
-/// the binary probes itself. Plain HTTP gets a real /healthz round trip; with
-/// TLS enabled a successful TCP connect to the listener suffices.
+/// Container HEALTHCHECK entrypoint: probes itself since no shell/curl exists in the image (real /healthz round trip over plain HTTP, TCP connect only when TLS is enabled).
 fn healthcheck() -> ExitCode {
     use std::io::{Read, Write};
 

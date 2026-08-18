@@ -1,6 +1,4 @@
-//! JSON DTOs for the web API. `republish-core`'s runtime types (capabilities,
-//! discovery results, samples, statuses) are not serde types, so the web layer
-//! mirrors them here; the shapes are the contract with the embedded browser UI.
+//! JSON DTOs for the web API: mirrors `republish-core`'s non-serde runtime types here, forming the contract with the embedded browser UI.
 
 use proto_api::{Addressing, BrowseKind, Capabilities, DiscoveryKind, FieldKind, FieldSpec};
 use republish_core::config::{AppConfig, MqttConfig};
@@ -146,11 +144,7 @@ pub fn addressing_display(addressing: &Addressing) -> String {
         .join(" ")
 }
 
-/// Stable string key for a point identity, used by the UI to join statuses to
-/// points and samples. Derived from the point's addressing only (matching
-/// [`PointIdentity`]), so renaming a device's `device_key` label does not
-/// orphan the UI status join. Must stay byte-for-byte identical to the key
-/// built in `web::state` for `PointPublish` events.
+/// Stable point-identity key (addressing-only, survives device_key renames); must stay byte-for-byte identical to the key built in `web::state` for `PointPublish` events.
 pub fn identity_key(point: &PointConfig) -> String {
     let identity = PointIdentity::from_point(point);
     identity
@@ -178,8 +172,7 @@ pub struct PointStatusDto {
     pub last_publish_error: Option<String>,
 }
 
-/// Mirrors the desktop's status chip precedence: publish error > read error >
-/// stale > ok; absent status renders as unknown.
+/// Mirrors the desktop's status chip precedence: publish error > read error > stale > ok; absent renders as unknown.
 pub fn status_dto(status: Option<&PointStatus>) -> PointStatusDto {
     match status {
         None => PointStatusDto {
@@ -288,8 +281,7 @@ pub fn lifecycle_dto(lifecycle: &RepublisherLifecycle) -> serde_json::Value {
     serde_json::json!({ "state": state, "error": error })
 }
 
-/// The saved config with write-only secrets removed, plus flags telling the UI
-/// which secrets are currently set.
+/// The saved config with write-only secrets stripped, plus flags for which secrets are currently set.
 pub fn redacted_config(config: &AppConfig) -> serde_json::Value {
     let mut clone = config.clone();
     clone.mqtt.password = None;

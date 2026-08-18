@@ -1,8 +1,4 @@
-//! Turnkey environment bootstrap: every deployment-relevant setting can come
-//! from `REPUBLISHER_*` env vars so the container starts ready on an IoT device
-//! with no interactive setup. Env values override the persisted config at every
-//! boot (env wins), but are only written to disk when the operator saves from
-//! the GUI — secrets follow the existing `remember_secrets` rule.
+//! Turnkey environment bootstrap: `REPUBLISHER_*` env vars override the persisted config at every boot but are only written to disk when the operator saves from the GUI.
 
 use anyhow::{bail, Context, Result};
 use republish_core::config::{AppConfig, PayloadFormat};
@@ -36,8 +32,7 @@ where
     }
 }
 
-/// Apply `REPUBLISHER_*` overrides to a loaded (or default) config.
-/// Returns human-readable notes about what was overridden.
+/// Apply `REPUBLISHER_*` overrides to a loaded (or default) config, returning human-readable notes on what changed.
 pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
     let mut notes = Vec::new();
     let mut note = |message: String| notes.push(message);
@@ -167,8 +162,7 @@ pub fn apply_env_overrides(config: &mut AppConfig) -> Result<Vec<String>> {
 mod tests {
     use super::*;
 
-    // Env-var tests mutate process state; keep them in one test so they cannot
-    // race each other under the parallel test runner.
+    // Env-var tests mutate process state; kept in one test so they can't race under the parallel runner.
     #[test]
     fn env_overrides_apply_and_validate() {
         let vars = [

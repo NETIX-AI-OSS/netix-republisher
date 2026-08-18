@@ -1,8 +1,4 @@
-//! Generic industrial-protocol MQTT republisher (desktop GUI).
-//!
-//! One binary discovers/browses/polls and republishes from any registered
-//! protocol, selected in the UI. Protocol adapters are compiled in via
-//! [`republisher::registry::build_registry`].
+//! Generic industrial-protocol MQTT republisher (desktop GUI): discovers/browses/polls and republishes from any registered protocol selected in the UI.
 #![cfg_attr(windows, windows_subsystem = "windows")]
 
 fn main() {

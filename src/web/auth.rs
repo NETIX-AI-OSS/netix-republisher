@@ -1,11 +1,4 @@
-//! Session auth for the web GUI.
-//!
-//! One admin credential, supplied via `REPUBLISHER_ADMIN_PASSWORD` (plain, for
-//! turnkey env-driven deployments) or `REPUBLISHER_ADMIN_PASSWORD_HASH` (argon2
-//! PHC string, preferred where the environment is visible to other processes).
-//! If neither is set the daemon generates a random password at boot and prints
-//! it once to stdout. `REPUBLISHER_AUTH=disabled` is honoured only on loopback
-//! binds — there is no silent-open failure mode on a LAN interface.
+//! Session auth for the web GUI: one admin credential from `REPUBLISHER_ADMIN_PASSWORD`(_HASH) (random+printed if unset); `REPUBLISHER_AUTH=disabled` only takes effect on loopback binds, never silently opening a LAN interface.
 
 use std::collections::HashMap;
 use std::net::{IpAddr, SocketAddr};

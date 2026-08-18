@@ -1,5 +1,4 @@
-//! REST + SSE handlers. Each endpoint mirrors one desktop GUI action so the
-//! web UI has strict feature parity with the iced app.
+//! REST + SSE handlers, each endpoint mirroring one desktop GUI action for strict feature parity with the iced app.
 
 use std::collections::BTreeMap;
 use std::convert::Infallible;
@@ -447,8 +446,7 @@ pub struct SettingsReq {
     pub mqtt: MqttSettingsReq,
     #[serde(default)]
     pub ui: Option<UiSettingsReq>,
-    /// Top-level runtime flag (sibling to `mqtt.autostart`): discover-then-poll
-    /// when no points are enabled. Absent = keep the stored value.
+    /// Top-level flag (sibling to `mqtt.autostart`): discover-then-poll when no points are enabled; absent keeps the stored value.
     #[serde(default)]
     pub discover_on_start: Option<bool>,
 }

@@ -1,6 +1,4 @@
-//! The `republisherd` web daemon: the desktop GUI's feature set behind an
-//! authenticated HTTP API + SSE stream + embedded browser UI, hardened for
-//! container deployment on edge/IoT devices.
+//! The `republisherd` web daemon: the desktop GUI's feature set behind an authenticated HTTP API + SSE stream + embedded browser UI, hardened for edge/IoT container deployment.
 
 pub mod api;
 pub mod assets;
@@ -264,8 +262,7 @@ fn router(state: Arc<WebState>) -> Router {
         .with_state(state)
 }
 
-/// Paths reachable without a session: the login shell (static assets), the
-/// session endpoints themselves, and the container health probe.
+/// Paths reachable without a session: static login-shell assets, the session endpoints, and the health probe.
 fn is_public(path: &str, method: &Method) -> bool {
     matches!(
         path,
@@ -306,9 +303,7 @@ async fn auth_middleware(
     next.run(request).await
 }
 
-/// Security headers on every response + same-origin enforcement on mutations.
-/// The CSP is strict: everything comes from the embedded assets, no inline
-/// script/style, no external origins.
+/// Security headers on every response plus same-origin enforcement on mutations, with a strict CSP allowing only embedded assets.
 async fn security_middleware(request: Request, next: Next) -> Response {
     // Reject cross-origin mutations by Origin header; non-browsers pass.
     let method = request.method().clone();
