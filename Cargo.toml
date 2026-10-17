@@ -48,12 +48,12 @@ winresource = "0.1"
 [dependencies]
 anyhow = "1.0"
 serde_json = "1.0"
-proto-api = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.4-core" }
+proto-api = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core" }
 # Adapter libs from netix-protocol-core; gui feature opts into iced GUI.
-republish-core = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.4-core", default-features = false }
-proto-bacnet = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.4-core", features = ["republish"] }
-proto-modbus = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.4-core", features = ["republish"] }
-proto-opcua = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.4-core", features = ["republish"] }
+republish-core = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", default-features = false }
+proto-bacnet = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
+proto-modbus = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
+proto-opcua = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
 
 # Web daemon deps: lean; assets embedded, cookies/headers hand-rolled.
 argon2 = { version = "0.5", optional = true }
