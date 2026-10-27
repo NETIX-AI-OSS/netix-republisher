@@ -101,6 +101,7 @@ jobs:
         with:
           name: netix-republisher-${{ matrix.artifact_name }}
           path: dist/*.zip
+          retention-days: 3
           if-no-files-found: error
 
   windows:
@@ -168,6 +169,7 @@ jobs:
         with:
           name: netix-republisher-windows-x86_64
           path: dist/*.zip
+          retention-days: 3
           if-no-files-found: error
 
   publish:
