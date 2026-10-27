@@ -11,6 +11,7 @@ on:
 # IMAGE_NAME is lowercased github.repository (OCI refs must be lowercase).
 env:
   REGISTRY: ghcr.io
+  DOCKER_BUILD_RECORD_UPLOAD: 'false'
 
 permissions:
   contents: read
