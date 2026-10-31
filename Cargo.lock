@@ -464,6 +464,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-tungstenite"
+version = "0.34.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8447f02eaa65412035e2d3eeaa3fc82bbb8d7137c84c5976b4af685136012ee9"
+dependencies = [
+ "atomic-waker",
+ "futures-core",
+ "futures-io",
+ "futures-task",
+ "futures-util",
+ "log",
+ "pin-project-lite",
+ "rustls-native-certs",
+ "rustls-pki-types",
+ "tokio",
+ "tokio-rustls",
+ "tungstenite",
+]
+
+[[package]]
 name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1278,6 +1298,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27ae1dd37df86211c42e150270f82743308803d90a6f6e6651cd730d5e1732f"
 
 [[package]]
+name = "data-encoding"
+version = "2.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06"
+
+[[package]]
 name = "data-url"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1337,7 +1363,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1475,7 +1501,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1596,9 +1622,9 @@ checksum = "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
 
 [[package]]
 name = "flume"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da0e4dd2a88388a1f4ccc7c9ce104604dab68d9f408dc34cd45823d5a9069095"
+checksum = "5e139bc46ca777eb5efaf62df0ab8cc5fd400866427e56c68b22e414e53bd3be"
 dependencies = [
  "futures-core",
  "futures-sink",
@@ -2993,6 +3019,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mqttbytes-core-next"
+version = "0.34.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "366b6ba2b4209ca4bc5ac731ccddf570d09831981eed07e5fbd63564cf0cf1aa"
+dependencies = [
+ "bytes",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "mundy"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3909,7 +3945,7 @@ dependencies = [
 [[package]]
 name = "proto-api"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.5-core#eb5ad76e3810ef38b4487b85eb66b1ee38087589"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "serde",
  "serde_json",
@@ -3918,7 +3954,7 @@ dependencies = [
 [[package]]
 name = "proto-bacnet"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.5-core#eb5ad76e3810ef38b4487b85eb66b1ee38087589"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3937,7 +3973,7 @@ dependencies = [
 [[package]]
 name = "proto-modbus"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.5-core#eb5ad76e3810ef38b4487b85eb66b1ee38087589"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3953,7 +3989,7 @@ dependencies = [
 [[package]]
 name = "proto-opcua"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.5-core#eb5ad76e3810ef38b4487b85eb66b1ee38087589"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-opcua",
@@ -4260,7 +4296,7 @@ checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
 [[package]]
 name = "republish-core"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.5-core#eb5ad76e3810ef38b4487b85eb66b1ee38087589"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4271,7 +4307,7 @@ dependencies = [
  "iced",
  "log",
  "proto-api",
- "rumqttc",
+ "rumqttc-v4-next",
  "rustls-native-certs",
  "rustls-pemfile",
  "serde",
@@ -4374,23 +4410,40 @@ dependencies = [
 ]
 
 [[package]]
-name = "rumqttc"
-version = "0.25.1"
+name = "rumqttc-core-next"
+version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0feff8d882bff0b2fddaf99355a10336d43dd3ed44204f85ece28cf9626ab519"
+checksum = "249896ab27ed630590971738264baa8f722f18965d2e387c706c40a3c2a572cc"
 dependencies = [
+ "async-tungstenite",
+ "rustls-native-certs",
+ "rustls-pki-types",
+ "rustls-webpki",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-rustls",
+]
+
+[[package]]
+name = "rumqttc-v4-next"
+version = "0.34.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3767dde22a804ea806107d0f4331e33cb794d1b8468b11c86fb0c1366f07054"
+dependencies = [
+ "async-tungstenite",
  "bytes",
  "fixedbitset",
  "flume",
  "futures-util",
  "log",
+ "mqttbytes-core-next",
+ "rumqttc-core-next",
  "rustls-native-certs",
- "rustls-pemfile",
- "rustls-webpki 0.102.8",
+ "rustls-pki-types",
+ "rustls-webpki",
  "thiserror 2.0.18",
  "tokio",
  "tokio-rustls",
- "tokio-stream",
  "tokio-util",
 ]
 
@@ -4438,7 +4491,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4448,10 +4501,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf"
 dependencies = [
  "aws-lc-rs",
- "log",
  "once_cell",
  "rustls-pki-types",
- "rustls-webpki 0.103.15",
+ "rustls-webpki",
  "subtle",
  "zeroize",
 ]
@@ -4488,20 +4540,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-webpki"
-version = "0.102.8"
+version = "0.103.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64ca1bc8749bd4cf37b5ce386cc146580777b4e8572c7b97baf22c83f444bee9"
-dependencies = [
- "ring",
- "rustls-pki-types",
- "untrusted",
-]
-
-[[package]]
-name = "rustls-webpki"
-version = "0.103.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
+checksum = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
 dependencies = [
  "aws-lc-rs",
  "ring",
@@ -5093,7 +5134,7 @@ dependencies = [
  "getrandom 0.4.2",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5466,6 +5507,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
 dependencies = [
  "core_maths",
+]
+
+[[package]]
+name = "tungstenite"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c01152af293afb9c7c2a57e4b559c5620b421f6d133261c60dd2d0cdb38e6b8"
+dependencies = [
+ "bytes",
+ "data-encoding",
+ "http",
+ "httparse",
+ "log",
+ "rand 0.9.4",
+ "rustls",
+ "rustls-pki-types",
+ "sha1",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -6098,7 +6157,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
