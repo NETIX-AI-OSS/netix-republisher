@@ -48,12 +48,12 @@ winresource = "0.1"
 [dependencies]
 anyhow = "1.0"
 serde_json = "1.0"
-proto-api = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core" }
+proto-api = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "81a822c62b9c1a55309ae859ef2d2f9f44363075" }
 # Adapter libs from netix-protocol-core; gui feature opts into iced GUI.
-republish-core = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", default-features = false }
-proto-bacnet = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
-proto-modbus = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
-proto-opcua = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", tag = "v0.1.5-core", features = ["republish"] }
+republish-core = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "81a822c62b9c1a55309ae859ef2d2f9f44363075", default-features = false }
+proto-bacnet = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "81a822c62b9c1a55309ae859ef2d2f9f44363075", features = ["republish"] }
+proto-modbus = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "81a822c62b9c1a55309ae859ef2d2f9f44363075", features = ["republish"] }
+proto-opcua = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "81a822c62b9c1a55309ae859ef2d2f9f44363075", features = ["republish"] }
 
 # Web daemon deps: lean; assets embedded, cookies/headers hand-rolled.
 argon2 = { version = "0.5", optional = true }
@@ -70,7 +70,4 @@ tempfile = "3"
 
 # Patched bacnet-transport: fixes broadcast port with ephemeral bind port.
 [patch.crates-io]
-# Reuse the reviewed MQTT verifier fix until rumqttc publishes a compatible release.
-rumqttc = { git = "https://github.com/NETIX-AI-OSS/netix-protocol-core", rev = "ca9bc0402d0b91723fad831566d59cb45c4c8d61" }
-
 bacnet-transport = { path = "vendor/bacnet-transport" }
