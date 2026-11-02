@@ -20,7 +20,7 @@ jobs:
   build:
     name: Build ${{ matrix.platform }}
     runs-on:
-      group: default
+      group: e2e-worker
       labels: ${{ matrix.runner }}
     timeout-minutes: 90
     strategy:
@@ -94,7 +94,7 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on:
-      group: default
+      group: e2e-worker
       labels: [build-only, Linux, X64]
     timeout-minutes: 30
     permissions:
