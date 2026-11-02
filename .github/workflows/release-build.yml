@@ -15,9 +15,12 @@ concurrency:
 jobs:
   test-gate:
     name: Test gate (Linux x86_64)
-    runs-on: ubuntu-24.04
+    runs-on: [build-only, Linux, X64]
+    container: rust:1.96.0-bookworm
     timeout-minutes: 60
     steps:
+      - name: Install container build tools
+        run: apt-get update && apt-get install -y --no-install-recommends cmake perl pkg-config
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Install Rust toolchain
         run: |
@@ -25,8 +28,8 @@ jobs:
           rustup default stable
       - name: Install Linux build dependencies (iced GUI)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y \
             pkg-config libxkbcommon-dev libwayland-dev libx11-dev libxi-dev \
             libxrandr-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev \
             libegl1-mesa-dev zip
@@ -41,28 +44,36 @@ jobs:
     name: Build ${{ matrix.artifact_name }}
     needs: test-gate
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: [build-only, Linux, X64]
+            container: rust:1.96.0-bookworm
             target: x86_64-unknown-linux-gnu
             artifact_name: linux-x86_64
             bin: republisher
-          - os: ubuntu-24.04
+          - os: [build-only, Linux, ARM64]
+            container: rust:1.96.0-bookworm
             target: aarch64-unknown-linux-gnu
             artifact_name: linux-aarch64
             bin: republisher
-          - os: macos-latest
+          - os: [build-only, macOS]
+            container: ""
             target: x86_64-apple-darwin
             artifact_name: macos-x86_64
             bin: republisher
-          - os: macos-latest
+          - os: [build-only, macOS]
+            container: ""
             target: aarch64-apple-darwin
             artifact_name: macos-aarch64
             bin: republisher
     steps:
+      - name: Install container build tools
+        if: runner.os == 'Linux'
+        run: apt-get update && apt-get install -y --no-install-recommends cmake perl pkg-config
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Install Rust toolchain
         run: |
@@ -72,13 +83,13 @@ jobs:
       - name: Install Linux build dependencies (iced GUI)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y \
             pkg-config libxkbcommon-dev libwayland-dev libx11-dev libxi-dev \
             libxrandr-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev \
             libegl1-mesa-dev zip
           if [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
-            sudo apt-get install -y gcc-aarch64-linux-gnu
+            apt-get install -y gcc-aarch64-linux-gnu
           fi
       - name: Install packaging tools (macOS)
         if: runner.os == 'macOS'
@@ -106,7 +117,7 @@ jobs:
 
   windows:
     name: Build Windows executable (signed)
-    runs-on: windows-2025-vs2026
+    runs-on: [build-only-windows, Windows, X64]
     timeout-minutes: 60
     environment: release
     permissions:
@@ -175,7 +186,8 @@ jobs:
   publish:
     name: Publish GitHub release
     needs: [build-unix, windows]
-    runs-on: ubuntu-24.04
+    runs-on: [build-only, Linux, X64]
+    container: rust:1.96.0-bookworm
     timeout-minutes: 30
     permissions:
       actions: read
@@ -183,6 +195,8 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Install container build tools
+        run: apt-get update && apt-get install -y --no-install-recommends cmake perl pkg-config gh jq zip unzip
       - name: Download artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
