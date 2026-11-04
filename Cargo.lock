@@ -3945,7 +3945,7 @@ dependencies = [
 [[package]]
 name = "proto-api"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.6-core#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "serde",
  "serde_json",
@@ -3954,7 +3954,7 @@ dependencies = [
 [[package]]
 name = "proto-bacnet"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.6-core#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3973,7 +3973,7 @@ dependencies = [
 [[package]]
 name = "proto-modbus"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.6-core#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3989,7 +3989,7 @@ dependencies = [
 [[package]]
 name = "proto-opcua"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.6-core#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-opcua",
@@ -4296,7 +4296,7 @@ checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
 [[package]]
 name = "republish-core"
 version = "0.1.0"
-source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?rev=81a822c62b9c1a55309ae859ef2d2f9f44363075#81a822c62b9c1a55309ae859ef2d2f9f44363075"
+source = "git+https://github.com/NETIX-AI-OSS/netix-protocol-core?tag=v0.1.6-core#81a822c62b9c1a55309ae859ef2d2f9f44363075"
 dependencies = [
  "anyhow",
  "async-trait",
