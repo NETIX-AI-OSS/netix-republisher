@@ -1,4 +1,4 @@
-# NETIX Republisher web daemon (republisherd) — hardened, minimal image.
+# NETIX Republisher web daemon (republisherd): hardened, minimal image.
 #
 #   docker build -t netix-republisher .
 #   docker run -p 8080:8080 -v republisher-data:/data \

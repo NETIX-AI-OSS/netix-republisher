@@ -7,7 +7,7 @@ services:
     volumes:
       - republisher-data:/data
     environment:
-      # Web GUI admin credential — set one of these before first boot.
+      # Web GUI admin credential: set one of these before first boot.
       REPUBLISHER_ADMIN_PASSWORD: ${REPUBLISHER_ADMIN_PASSWORD:?set REPUBLISHER_ADMIN_PASSWORD}
       # Broker target; the GUI can change all of this later.
       REPUBLISHER_MQTT_HOST: ${REPUBLISHER_MQTT_HOST:-broker.example.com}
