@@ -372,7 +372,7 @@ function statusChip(status) {
 }
 
 function formatTimestamp(ms) {
-  if (!ms) return "—";
+  if (!ms) return "N/A";
   const date = new Date(ms);
   const pad = (n) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
@@ -565,7 +565,7 @@ function renderConnectLists() {
           "div",
           { class: "row-main" },
           el("div", { class: "row-title" }, device.key),
-          el("div", { class: "row-sub" }, `${device.address} — ${device.detail}`)
+          el("div", { class: "row-sub" }, `${device.address}, ${device.detail}`)
         ),
         browse
       )
@@ -582,7 +582,7 @@ function renderConnectLists() {
       api(`/api/browsed/${point.index}/add`, { method: "POST" }).catch(() => {})
     );
     const name = point.name || point.suggested_tag_path;
-    const value = point.value_display ?? "—";
+    const value = point.value_display ?? "N/A";
     browsedList.append(
       el(
         "div",
@@ -690,8 +690,8 @@ function renderPoints() {
         .then(resetPointEditor)
         .catch(() => {})
     );
-    const detail = point.status.last_value_display ?? "—";
-    const sampled = point.status.last_sample_ms ? formatTimestamp(point.status.last_sample_ms) : "—";
+    const detail = point.status.last_value_display ?? "N/A";
+    const sampled = point.status.last_sample_ms ? formatTimestamp(point.status.last_sample_ms) : "N/A";
     list.append(
       el(
         "div",
@@ -751,7 +751,7 @@ function renderRepublish() {
   const metrics = $("republish-metrics");
   clear(metrics);
   metrics.append(
-    metric("State", label, state.config.protocol || "—", kind),
+    metric("State", label, state.config.protocol || "N/A", kind),
     metric("Queued", String(state.status.published_total), "enqueued", ""),
     metric(
       "Delivered",
@@ -822,7 +822,7 @@ function renderSettings() {
   const password = el("input", {
     id: "set-password",
     type: "password",
-    placeholder: state.secrets.password_set ? "(set — leave blank to keep)" : "optional",
+    placeholder: state.secrets.password_set ? "(set, leave blank to keep)" : "optional",
   });
   password.addEventListener("input", () => (password.dataset.dirty = "1"));
   const clearPassword = el("button", { class: "btn", type: "button" }, "Clear");
@@ -837,7 +837,7 @@ function renderSettings() {
   const passphrase = el("input", {
     id: "set-passphrase",
     type: "password",
-    placeholder: state.secrets.client_key_passphrase_set ? "(set — leave blank to keep)" : "optional",
+    placeholder: state.secrets.client_key_passphrase_set ? "(set, leave blank to keep)" : "optional",
   });
   passphrase.addEventListener("input", () => (passphrase.dataset.dirty = "1"));
   const keepAlive = textInput("set-keep-alive", String(mqtt.keep_alive_secs));

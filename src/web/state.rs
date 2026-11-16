@@ -42,7 +42,7 @@ fn level_str(level: LogLevel) -> &'static str {
     }
 }
 
-/// Mutable state behind one lock — mirrors the desktop app's fields.
+/// Mutable state behind one lock, mirrors the desktop app's fields.
 pub struct Shared {
     pub config: AppConfig,
     pub devices: Vec<DiscoveredDevice>,
@@ -54,9 +54,9 @@ pub struct Shared {
     pub log_seq: u64,
     pub lifecycle: RepublisherLifecycle,
     pub stop_flag: Option<Arc<AtomicBool>>,
-    /// Local enqueue attempts (samples handed to the MQTT channel) — NOT delivery.
+    /// Local enqueue attempts (samples handed to the MQTT channel), NOT delivery.
     pub published_total: usize,
-    /// Broker-confirmed deliveries (running total of QoS 1 PubAcks) — the honest "delivered" figure alongside `published_total`.
+    /// Broker-confirmed deliveries (running total of QoS 1 PubAcks), the honest "delivered" figure alongside `published_total`.
     pub acked_total: usize,
     /// Most recent broker/connection error; carries the CONNACK auth-refusal message so the UI can tell that apart from a plain transport drop, cleared on recovery or restart.
     pub last_error: Option<String>,

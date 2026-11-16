@@ -6,7 +6,7 @@ use std::process::ExitCode;
 use republisher::web::{serve, ServerOptions};
 
 const USAGE: &str = "\
-republisherd — NETIX republisher web daemon
+republisherd, NETIX republisher web daemon
 
 USAGE:
     republisherd [--config <path>] [--bind <addr:port>]
