@@ -8,6 +8,10 @@ on:
     tags: ["v*"]
   pull_request:
 
+concurrency:
+  group: docker-image-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 # IMAGE_NAME is lowercased github.repository (OCI refs must be lowercase).
 env:
   REGISTRY: ghcr.io
@@ -53,6 +57,26 @@ jobs:
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+        with:
+          # Only publishing jobs use persistent state. PR jobs get a fresh builder.
+          name: ${{ github.event_name != 'pull_request' && format('netix-republisher-publish-{0}', env.PLATFORM_PAIR) || '' }}
+          keep-state: ${{ github.event_name != 'pull_request' }}
+          buildkitd-config-inline: |
+            [worker.oci]
+              gc = true
+            [[worker.oci.gcpolicy]]
+              all = true
+              keepDuration = "168h"
+            [[worker.oci.gcpolicy]]
+              filters = ["type!=exec.cachemount"]
+              reservedSpace = "1GB"
+              maxUsedSpace = "6GB"
+              minFreeSpace = "20GB"
+            [[worker.oci.gcpolicy]]
+              all = true
+              reservedSpace = "1GB"
+              maxUsedSpace = "6GB"
+              minFreeSpace = "20GB"
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
@@ -77,8 +101,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           provenance: mode=max
           sbom: true
-          cache-from: type=gha,scope=${{ env.PLATFORM_PAIR }}
-          cache-to: type=gha,scope=${{ env.PLATFORM_PAIR }},mode=max
+          # PRs may read existing cache entries during the transition to local builders.
+          cache-from: ${{ github.event_name == 'pull_request' && format('type=gha,scope={0}', env.PLATFORM_PAIR) || '' }}
           outputs: |
             type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
 
