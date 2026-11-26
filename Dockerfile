@@ -11,6 +11,7 @@
 
 # ---- build stage -----------------------------------------------------------
 FROM rust:1-alpine AS build
+ARG TARGETARCH
 
 # build-base/cmake/perl/linux-headers: required to compile the rustls crypto
 # provider (aws-lc-sys); git: cargo fetches the netix-protocol-core crates.
@@ -21,10 +22,15 @@ COPY . .
 
 # Build a fully static binary for the *native* platform of this build stage
 # (CI runs one build per architecture on native runners). Passing --target
-# explicitly keeps RUSTFLAGS off build scripts/proc-macros.
-RUN set -eux; \
+# explicitly keeps RUSTFLAGS off build scripts/proc-macros. Refresh source
+# timestamps on a layer miss so Cargo rebuilds local crates after an old checkout.
+RUN --mount=type=cache,id=republisher-registry-${TARGETARCH},target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,id=republisher-git-${TARGETARCH},target=/usr/local/cargo/git,sharing=locked \
+    --mount=type=cache,id=republisher-release-musl-web-${TARGETARCH},target=/src/target,sharing=locked \
+    set -eux; \
     target="$(rustc -vV | sed -n 's/host: //p')"; \
     rustup target add "$target"; \
+    find . -path ./target -prune -o -type f -exec touch {} +; \
     RUSTFLAGS="-C target-feature=+crt-static" \
       cargo build --locked --release \
       --no-default-features --features web \
